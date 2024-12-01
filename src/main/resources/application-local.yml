@@ -2,10 +2,16 @@ spring:
   application:
     name: easyfix
   datasource:
-    password: admin
-    url: jdbc:postgresql://localhost:5432/easy_fix?useSSL=false
-    username: postgres
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+    username: ${DB_USER}
     hikari:
-        connectionTimeout: 60000
-        idleTimeout: 300000
-        minimumIdle: 1
+      connectionTimeout: 60000
+      idleTimeout: 300000
+      minimumIdle: 1
+    jpa:
+      show-sql: false
+      properties:
+        hibernate:
+          show_sql: false
+          format_sql: false

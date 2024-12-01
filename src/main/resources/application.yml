@@ -1,5 +1,5 @@
 spring:
-    application:
-        name: easyfix
-    profiles:
-        active: ${ACTIVE_PROFILE}
+  application:
+    name: easyfix
+  profiles:
+    active: ${ACTIVE_PROFILE}
