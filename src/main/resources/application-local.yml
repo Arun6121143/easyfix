@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: easyfix
+  datasource:
+    password: admin
+    url: jdbc:postgresql://localhost:5432/easy_fix?useSSL=false
+    username: postgres
+    hikari:
+        connectionTimeout: 60000
+        idleTimeout: 300000
+        minimumIdle: 1
