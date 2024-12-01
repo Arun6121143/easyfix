@@ -3,3 +3,7 @@ spring:
     name: easyfix
   profiles:
     active: ${ACTIVE_PROFILE}
+  flyway:
+    enabled: false
+    primary:
+      location: classpath:db/migration
