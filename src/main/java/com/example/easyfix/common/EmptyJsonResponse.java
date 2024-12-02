@@ -3,7 +3,7 @@ package com.example.easyfix.common;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize
-public class EmptyJsonResponse {
+public final class EmptyJsonResponse {
 
     private EmptyJsonResponse() {
 

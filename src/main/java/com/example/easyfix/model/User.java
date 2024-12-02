@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import java.sql.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,10 +24,15 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
+    private String name;
+
+    @Email
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    @Column(nullable = false)
+    private String password;
 
     private String role;
 

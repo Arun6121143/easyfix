@@ -11,9 +11,9 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 @Slf4j
 public class ResponseMessageConfig extends ResourceBundleMessageSource {
 
-    private String[] emptyArray = {};
+    private final String[] emptyArray = {};
 
-    private String getStatusMessage(final int statusCode, final @Nullable String... replacementValues) {
+    public String getStatusMessage(final int statusCode, final @Nullable String... replacementValues) {
         String message = String.valueOf(statusCode);
         try {
             message = getMessage(message, replacementValues, Locale.getDefault());
@@ -23,7 +23,7 @@ public class ResponseMessageConfig extends ResourceBundleMessageSource {
         return message;
     }
 
-    private String getStatusMessages(final int statusCode) {
+    public String getStatusMessages(final int statusCode) {
         return getStatusMessage(statusCode, emptyArray);
     }
 

@@ -12,8 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserDto {
     private Integer id;
+    private String name;
     private String email;
-    private String phoneNumber;
+    private String password;
     private String role;
     private Timestamp createdDate;
     private Timestamp updatedDate;
