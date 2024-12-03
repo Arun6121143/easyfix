@@ -1,13 +1,17 @@
 package com.example.easyfix.model;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import java.sql.Timestamp;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +39,11 @@ public class User {
     private String password;
 
     private String role;
+
+    @ElementCollection
+    @CollectionTable(schema = "easy_fix",name = "user_services", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "service")
+    private Set<String> services;
 
     @Column(name = "created_date")
     private Timestamp createdDate;

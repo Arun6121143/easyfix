@@ -12,8 +12,12 @@ import com.example.easyfix.model.User;
 import com.example.easyfix.repository.UserRepo;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,6 +53,7 @@ public class UserService implements UserInterfaceService {
                         .id(user1.getId()).email(user1.getEmail())
                         .role(user1.getRole()).createdDate(user1.getCreatedDate())
                         .password(user1.getPassword()).name(user1.getName())
+                        .services(String.join(",", user1.getServices()))
                         .build();
                 return EasyFixUtil.getCustomResponse(
                         EasyFixConstants.STATUS_SUCCESS,
@@ -81,11 +86,13 @@ public class UserService implements UserInterfaceService {
                                 .getStatusMessage(StatusCodes.EMAIL_ALREADY_EXISTS),
                         EmptyJsonResponse.getEmptyJsonResponse());
             }
-
+            Set<String> services = userDto.getRole().equalsIgnoreCase("service_provider") ?
+                    convertStringToSet(userDto.getServices()) : null;
             User user = User.builder()
                     .name(userDto.getName()).email(userDto.getEmail())
                     .createdDate(Timestamp.from(Instant.now())).password(passwordEncoder.encode(userDto.getPassword()))
                     .role(userDto.getRole().toUpperCase())
+                    .services(services)
                     .build();
             userRepo.save(user);
             return EasyFixUtil.getCustomResponse(EasyFixConstants.STATUS_SUCCESS,
@@ -99,6 +106,13 @@ public class UserService implements UserInterfaceService {
                 StatusCodes.REGISTER_OPERATION_FAILED, responseMessageConfig
                         .getStatusMessage(StatusCodes.REGISTER_OPERATION_FAILED, payload),
                 EmptyJsonResponse.getEmptyJsonResponse());
+    }
+
+    private Set<String> convertStringToSet(String services) {
+        if (services != null && !services.isEmpty()) {
+            return new HashSet<>(Arrays.asList(services.split(",")));
+        }
+        return new HashSet<>();
     }
 
     @Override
