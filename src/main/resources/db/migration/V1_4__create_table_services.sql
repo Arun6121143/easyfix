@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS easy_fix.services(
+  id INTEGER GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1) NOT NULL,
+  service_name VARCHAR(100) NOT NULL UNIQUE,
+  CONSTRAINT pk_easy_fix_services PRIMARY KEY
+    (
+        id
+    )
+ )
