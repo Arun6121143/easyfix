@@ -164,4 +164,9 @@ public class UserService implements UserInterfaceService {
                 EmptyJsonResponse.getEmptyJsonResponse());
     }
 
+    @Override
+    public ResponseDto listServices() {
+        return null;
+    }
+
 }

@@ -15,4 +15,6 @@ public interface UserInterfaceService {
     ResponseDto loginUser(final LoginDto loginDto);
 
     ResponseDto updateUser(final UserDto userDto);
+
+    ResponseDto listServices();
 }

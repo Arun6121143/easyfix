@@ -5,8 +5,10 @@ import com.example.easyfix.common.EasyFixUtil;
 import com.example.easyfix.common.EmptyJsonResponse;
 import com.example.easyfix.common.StatusCodes;
 import com.example.easyfix.config.ResponseMessageConfig;
+import com.example.easyfix.dto.LoginDto;
 import com.example.easyfix.dto.ResponseDto;
 import com.example.easyfix.dto.ServiceDto;
+import com.example.easyfix.dto.UserDto;
 import com.example.easyfix.model.Services;
 import com.example.easyfix.repository.ServiceRepo;
 import java.util.ArrayList;
@@ -18,10 +20,11 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ServiceListService {
+public class ServiceListService implements UserInterfaceService {
 
     private final ServiceRepo serviceRepo;
     private final ResponseMessageConfig responseMessageConfig;
+
 
     public ResponseDto listServices() {
         String payload = "services";
@@ -60,6 +63,26 @@ public class ServiceListService {
                         .getStatusMessage(StatusCodes.LIST_OPERATION_FAILED,
                                 payload), EmptyJsonResponse.getEmptyResponseArray());
 
+    }
+
+    @Override
+    public ResponseDto getById(Integer id) {
+        return null;
+    }
+
+    @Override
+    public ResponseDto registerUser(UserDto userDto) {
+        return null;
+    }
+
+    @Override
+    public ResponseDto loginUser(LoginDto loginDto) {
+        return null;
+    }
+
+    @Override
+    public ResponseDto updateUser(UserDto userDto) {
+        return null;
     }
 
 
