@@ -64,4 +64,13 @@ public class UserController {
         }
     }
 
+    @GetMapping("/service/providers")
+    private ResponseEntity<Object> listItemsServiceProviders() {
+        ResponseDto responseDto = userService.listItemsServiceProviders();
+        if (responseDto.getStatus().equals(EasyFixConstants.STATUS_FAILED)) {
+            return new ResponseEntity<>(responseDto, HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        }
+    }
 }

@@ -66,6 +66,11 @@ public class ServiceListService implements UserInterfaceService {
     }
 
     @Override
+    public ResponseDto listItemsServiceProviders() {
+        return null;
+    }
+
+    @Override
     public ResponseDto getById(Integer id) {
         return null;
     }

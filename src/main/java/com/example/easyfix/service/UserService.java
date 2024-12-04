@@ -14,15 +14,17 @@ import com.example.easyfix.repository.ServiceRepo;
 import com.example.easyfix.repository.UserRepo;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,6 +43,7 @@ public class UserService implements UserInterfaceService {
     private final String payload = "user";
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final String service = "service provider";
 
     private final JWTService jwtService;
 
@@ -183,6 +186,53 @@ public class UserService implements UserInterfaceService {
     @Override
     public ResponseDto listServices() {
         return null;
+    }
+
+    @Override
+    public ResponseDto listItemsServiceProviders() {
+        try {
+            List<User> serviceProviderList = userRepo.findByRole();
+            if (serviceProviderList == null || serviceProviderList.isEmpty()) {
+                return EasyFixUtil.getCustomResponse(
+                        EasyFixConstants.STATUS_SUCCESS,
+                        StatusCodes.EMPTY_LIST,
+                        responseMessageConfig.getStatusMessage(StatusCodes.EMPTY_LIST
+                                , service),
+                        EmptyJsonResponse.getEmptyResponseArray());
+            } else {
+                JSONObject jsonObject = new JSONObject();
+                serviceProviderList.forEach(services -> {
+                    if (services.getServices() != null && !services.getServices().isEmpty()) {
+                        String[] serviceList = String.join(",", services.getServices()).split(",");
+                        JSONObject serviceProviderDetails = new JSONObject();
+                        serviceProviderDetails.put("id", services.getId());
+                        serviceProviderDetails.put("name", services.getName());
+                        serviceProviderDetails.put("role", services.getRole());
+                        serviceProviderDetails.put("createdDate", services.getCreatedDate());
+                        for (String service1 : serviceList) {
+                            String serviceName = service1.trim().toUpperCase();
+                            if (!jsonObject.has(serviceName)) {
+                                jsonObject.put(serviceName, new JSONArray());
+                            }
+                            jsonObject.getJSONArray(serviceName)
+                                    .put(serviceProviderDetails);
+                        }
+                    }
+                });
+                return EasyFixUtil.getCustomResponse(
+                        EasyFixConstants.STATUS_SUCCESS,
+                        StatusCodes.LIST_OPERATION_SUCCESS,
+                        responseMessageConfig.getStatusMessage(StatusCodes.LIST_OPERATION_SUCCESS
+                                , service),
+                        Collections.singletonList(jsonObject.toMap()));
+            }
+        } catch (Exception e) {
+            log.error("Exception While Fetching service provider list", e);
+        }
+        return EasyFixUtil.getCustomResponse(EasyFixConstants.STATUS_FAILED,
+                StatusCodes.LIST_OPERATION_FAILED, responseMessageConfig
+                        .getStatusMessage(StatusCodes.LIST_OPERATION_FAILED,
+                                service), EmptyJsonResponse.getEmptyResponseArray());
     }
 
 }
