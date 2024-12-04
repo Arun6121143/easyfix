@@ -8,7 +8,9 @@ import com.example.easyfix.config.ResponseMessageConfig;
 import com.example.easyfix.dto.LoginDto;
 import com.example.easyfix.dto.ResponseDto;
 import com.example.easyfix.dto.UserDto;
+import com.example.easyfix.model.Services;
 import com.example.easyfix.model.User;
+import com.example.easyfix.repository.ServiceRepo;
 import com.example.easyfix.repository.UserRepo;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -18,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,6 +37,7 @@ public class UserService implements UserInterfaceService {
 
     private final UserRepo userRepo;
     private final ResponseMessageConfig responseMessageConfig;
+    private final ServiceRepo serviceRepo;
     private final String payload = "user";
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -87,7 +91,7 @@ public class UserService implements UserInterfaceService {
                         EmptyJsonResponse.getEmptyJsonResponse());
             }
             Set<String> services = userDto.getRole().equalsIgnoreCase("service_provider") ?
-                    convertStringToSet(userDto.getServices()) : null;
+                    getServiceNames(userDto.getServices()) : null;
             User user = User.builder()
                     .name(userDto.getName()).email(userDto.getEmail())
                     .createdDate(Timestamp.from(Instant.now())).password(passwordEncoder.encode(userDto.getPassword()))
@@ -108,9 +112,18 @@ public class UserService implements UserInterfaceService {
                 EmptyJsonResponse.getEmptyJsonResponse());
     }
 
-    private Set<String> convertStringToSet(String services) {
+    private Set<String> getServiceNames(String services) {
         if (services != null && !services.isEmpty()) {
-            return new HashSet<>(Arrays.asList(services.split(",")));
+            HashSet<String> serviceNames = new HashSet<>();
+            List<Integer> serviceIds = Arrays.stream(services.split(","))
+                    .map(Integer::parseInt)
+                    .toList();
+            List<Services> servicesList = serviceRepo.findAllById(serviceIds);
+            servicesList.forEach(services1 -> {
+                serviceNames.add(services1.getServiceName());
+            });
+
+            return serviceNames;
         }
         return new HashSet<>();
     }
@@ -143,11 +156,14 @@ public class UserService implements UserInterfaceService {
     public ResponseDto updateUser(final UserDto userDto) {
         try {
             userRepo.findById(userDto.getId()).ifPresent(user -> {
+                Set<String> services = userDto.getRole().equalsIgnoreCase("service_provider") ?
+                        getServiceNames(userDto.getServices()) : null;
                 user.setEmail(userDto.getEmail());
                 user.setUpdatedDate(Timestamp.from(Instant.now()));
                 user.setPassword(passwordEncoder.encode(userDto.getPassword()));
                 user.setName(userDto.getName());
                 user.setRole(userDto.getRole().toUpperCase());
+                user.setServices(services);
                 userRepo.save(user);
             });
             return EasyFixUtil.getCustomResponse(EasyFixConstants.STATUS_SUCCESS,
