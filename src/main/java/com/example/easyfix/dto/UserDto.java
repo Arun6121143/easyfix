@@ -17,6 +17,7 @@ public class UserDto {
     private String password;
     private String role;
     private String services;
+    private String serviceIds;
     private Timestamp createdDate;
     private Timestamp updatedDate;
 }

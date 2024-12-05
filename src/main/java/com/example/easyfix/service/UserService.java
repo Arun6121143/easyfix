@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -60,7 +61,8 @@ public class UserService implements UserInterfaceService {
                         .id(user1.getId()).email(user1.getEmail())
                         .role(user1.getRole()).createdDate(user1.getCreatedDate())
                         .password(user1.getPassword()).name(user1.getName())
-                        .services(String.join(",", user1.getServices()))
+                        .serviceIds(String.join(",", user1.getServices()))
+                        .services(getServiceNames(String.join(",", user1.getServices())))
                         .build();
                 return EasyFixUtil.getCustomResponse(
                         EasyFixConstants.STATUS_SUCCESS,
@@ -94,7 +96,7 @@ public class UserService implements UserInterfaceService {
                         EmptyJsonResponse.getEmptyJsonResponse());
             }
             Set<String> services = userDto.getRole().equalsIgnoreCase("service_provider") ?
-                    getServiceNames(userDto.getServices()) : null;
+                    Collections.singleton(userDto.getServices()) : null;
             User user = User.builder()
                     .name(userDto.getName()).email(userDto.getEmail())
                     .createdDate(Timestamp.from(Instant.now())).password(passwordEncoder.encode(userDto.getPassword()))
@@ -115,20 +117,24 @@ public class UserService implements UserInterfaceService {
                 EmptyJsonResponse.getEmptyJsonResponse());
     }
 
-    private Set<String> getServiceNames(String services) {
-        if (services != null && !services.isEmpty()) {
-            HashSet<String> serviceNames = new HashSet<>();
-            List<Integer> serviceIds = Arrays.stream(services.split(","))
-                    .map(Integer::parseInt)
-                    .toList();
-            List<Services> servicesList = serviceRepo.findAllById(serviceIds);
-            servicesList.forEach(services1 -> {
-                serviceNames.add(services1.getServiceName());
-            });
+    private String getServiceNames(String services) {
+        try {
+            if (services != null && !services.isEmpty()) {
+                List<Integer> serviceIds = Arrays.stream(services.split(","))
+                        .map(Integer::parseInt)
+                        .toList();
+                List<Services> servicesList = serviceRepo.findAllById(serviceIds);
+                List<String> serviceNameList = new ArrayList<>();
+                for (Services services1 : servicesList) {
+                    serviceNameList.add(services1.getServiceName());
+                }
 
-            return serviceNames;
+                return String.join(",", serviceNameList);
+            }
+        } catch (Exception e) {
+            log.error("Exception While getting service names", e);
         }
-        return new HashSet<>();
+        return null;
     }
 
     @Override
@@ -160,7 +166,7 @@ public class UserService implements UserInterfaceService {
         try {
             userRepo.findById(userDto.getId()).ifPresent(user -> {
                 Set<String> services = userDto.getRole().equalsIgnoreCase("service_provider") ?
-                        getServiceNames(userDto.getServices()) : null;
+                        Collections.singleton(userDto.getServices()) : null;
                 user.setEmail(userDto.getEmail());
                 user.setUpdatedDate(Timestamp.from(Instant.now()));
                 user.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -210,7 +216,8 @@ public class UserService implements UserInterfaceService {
                         serviceProviderDetails.put("role", services.getRole());
                         serviceProviderDetails.put("createdDate", services.getCreatedDate());
                         for (String service1 : serviceList) {
-                            String serviceName = service1.trim().toUpperCase();
+                            String serviceName = serviceRepo.getReferenceById(Integer.parseInt(service1))
+                                    .getServiceName().toUpperCase();
                             if (!jsonObject.has(serviceName)) {
                                 jsonObject.put(serviceName, new JSONArray());
                             }
