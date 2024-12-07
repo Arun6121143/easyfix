@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/easyFix/services/")
+@RequestMapping("/v1/easyFix/services")
 public class ServiceController {
 
     private final ServiceListService serviceListService;

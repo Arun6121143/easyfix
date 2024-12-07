@@ -20,4 +20,5 @@ public class UserDto {
     private String serviceIds;
     private Timestamp createdDate;
     private Timestamp updatedDate;
+    private Integer vin;
 }

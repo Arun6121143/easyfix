@@ -23,4 +23,8 @@ public final class StatusCodes {
 
     public static final int EMAIL_ALREADY_EXISTS = 1014;
 
+    public static final int BOOKING_OPERATION_SUCCESS = 1015;
+
+    public static final int BOOKING_OPERATION_FAILED = 1016;
+
 }
