@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ServiceListService implements UserInterfaceService {
+public class ServiceListService implements ServiceInterface {
 
     private final ServiceRepo serviceRepo;
     private final ResponseMessageConfig responseMessageConfig;
@@ -64,31 +64,5 @@ public class ServiceListService implements UserInterfaceService {
                                 payload), EmptyJsonResponse.getEmptyResponseArray());
 
     }
-
-    @Override
-    public ResponseDto listItemsServiceProviders() {
-        return null;
-    }
-
-    @Override
-    public ResponseDto getById(Integer id) {
-        return null;
-    }
-
-    @Override
-    public ResponseDto registerUser(UserDto userDto) {
-        return null;
-    }
-
-    @Override
-    public ResponseDto loginUser(LoginDto loginDto) {
-        return null;
-    }
-
-    @Override
-    public ResponseDto updateUser(UserDto userDto) {
-        return null;
-    }
-
 
 }

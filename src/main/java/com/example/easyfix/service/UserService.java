@@ -190,11 +190,6 @@ public class UserService implements UserInterfaceService {
     }
 
     @Override
-    public ResponseDto listServices() {
-        return null;
-    }
-
-    @Override
     public ResponseDto listItemsServiceProviders() {
         try {
             List<User> serviceProviderList = userRepo.findByRole();

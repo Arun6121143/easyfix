@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class BookingService {
+public class BookingService implements BookingInterface {
 
     private final BookingRepo bookingRepo;
     private final ResponseMessageConfig responseMessageConfig;
